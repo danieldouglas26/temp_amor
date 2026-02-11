@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verônica | Nossa Jornada</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Montserrat:wght@300;400;500&display=swap" rel="stylesheet">
+    
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg-deep: #050505;
+            --bg-gradient: radial-gradient(circle at center, #1a1a2e 0%, #000000 100%);
+            --accent-gold: #c29545; /* Dourado Nobre */
+            --text-light: #f5f5f5;
+            --text-dim: #888888;
+            --glass: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.08);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: var(--bg-deep);
+            color: var(--text-light);
+            font-family: 'Montserrat', sans-serif;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Fundo Animado (Estrelas) */
+        .stars {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--bg-gradient);
+            z-index: -1;
+        }
+        
+        .star {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            opacity: 0.3;
+            animation: twinkle 5s infinite ease-in-out;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.3; transform: scale(1); }
+            50% { opacity: 0.8; transform: scale(1.2); }
+        }
+
+        /* Barra de Progresso no Topo */
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 3px;
+            background: var(--accent-gold);
+            width: 0%;
+            z-index: 1000;
+            transition: width 0.2s ease;
+            box-shadow: 0 0 10px var(--accent-gold);
+        }
+
+        /* Botão de Música Flutuante */
+        .music-toggle {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 50px;
+            height: 50px;
+            background: var(--glass);
+            border: 1px solid var(--accent-gold);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 999;
+            color: var(--accent-gold);
+            cursor: pointer;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        .music-toggle:active { transform: scale(0.9); }
+        .music-playing { animation: spin 4s linear infinite; }
+        
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+
+        /* HERO SECTION */
+        header {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 2rem;
+            opacity: 0;
+            animation: fadeInPage 1.5s ease-out forwards;
+        }
+
+        h1 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 4rem;
+            color: var(--accent-gold);
+            letter-spacing: -1px;
+            margin-bottom: 1rem;
+            line-height: 1;
+        }
+
+        .subtitle {
+            font-size: 1rem;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: var(--text-dim);
+            margin-bottom: 3rem;
+            border-bottom: 1px solid var(--accent-gold);
+            padding-bottom: 10px;
+        }
+
+        .scroll-hint {
+            position: absolute;
+            bottom: 40px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            opacity: 0.7;
+        }
+
+        .scroll-line {
+            width: 1px;
+            height: 60px;
+            background: linear-gradient(to bottom, var(--accent-gold), transparent);
+        }
+
+        /* TIMELINE */
+        .timeline-section {
+            padding: 4rem 1rem;
+            max-width: 900px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        /* Linha Central */
+        .timeline-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 20px; /* Mobile */
+            width: 1px;
+            background: linear-gradient(to bottom, transparent, var(--glass-border) 20%, var(--glass-border) 80%, transparent);
+        }
+
+        .event-wrapper {
+            position: relative;
+            margin-bottom: 6rem;
+            padding-left: 50px;
+        }
+
+        /* Marcador (Dot) */
+        .marker {
+            position: absolute;
+            left: 14px;
+            top: 0;
+            width: 13px;
+            height: 13px;
+            border-radius: 50%;
+            background: var(--bg-deep);
+            border: 2px solid var(--accent-gold);
+            box-shadow: 0 0 15px rgba(194, 149, 69, 0.4);
+            z-index: 2;
+            transition: background 0.3s;
+        }
+
+        .event-card {
+            background: var(--glass);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border);
+            padding: 2rem;
+            border-radius: 4px;
+            opacity: 0;
+            transform: translateY(40px);
+            transition: all 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+
+        .event-card.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .date-label {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--accent-gold);
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .event-card h2 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            font-weight: 400;
+        }
+
+        .event-card p {
+            color: #bbb;
+            font-weight: 300;
+            line-height: 1.8;
+            margin-bottom: 1.5rem;
+        }
+
+        .img-container {
+            width: 100%;
+            overflow: hidden;
+            border-radius: 2px;
+            position: relative;
+        }
+
+        .img-container::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
+            pointer-events: none;
+        }
+
+        .event-card img {
+            width: 100%;
+            display: block;
+            transition: transform 1.5s ease;
+            filter: sepia(20%) contrast(1.1);
+        }
+
+        .event-card:hover img {
+            transform: scale(1.05);
+            filter: sepia(0%);
+        }
+
+        /* FINAL SECTION */
+        .final-section {
+            min-height: 80vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 2rem;
+            background: linear-gradient(to top, #000, transparent);
+        }
+
+        .final-quote {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 2.5rem;
+            margin-bottom: 3rem;
+            max-width: 600px;
+            font-style: italic;
+        }
+
+        .btn-premium {
+            padding: 18px 45px;
+            background: transparent;
+            border: 1px solid var(--accent-gold);
+            color: var(--accent-gold);
+            font-family: 'Montserrat', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            text-decoration: none;
+        }
+
+        .btn-premium:hover {
+            background: var(--accent-gold);
+            color: #000;
+            box-shadow: 0 0 30px rgba(194, 149, 69, 0.3);
+        }
+
+        @keyframes fadeInPage { from { opacity: 0; } to { opacity: 1; } }
+
+        /* Desktop Adjustments */
+        @media (min-width: 768px) {
+            .timeline-section::before { left: 50%; margin-left: -0.5px; }
+            .event-wrapper { width: 50%; padding: 0 40px; margin-bottom: 100px; }
+            .event-wrapper:nth-child(odd) { margin-left: auto; }
+            .event-wrapper:nth-child(even) { margin-right: auto; text-align: right; }
+            .marker { left: -7px; } /* Ajuste central */
+            .event-wrapper:nth-child(odd) .marker { left: -7px; }
+            .event-wrapper:nth-child(even) .marker { right: -7px; left: auto; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="stars" id="star-container"></div>
+
+    <div class="progress-bar" id="progressBar"></div>
+
+    <div class="music-toggle" onclick="toggleMusic()">
+        <i class="fas fa-music"></i>
+    </div>
+    <audio id="bgMusic" loop>
+        <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
+    </audio>
+
+    <header>
+        <span class="subtitle">Uma história real</span>
+        <h1>Verônica & Daniel</h1>
+        <div class="scroll-hint">
+        </div>
+    </header>
+
+    <section class="timeline-section">
+        
+        <div class="event-wrapper">
+            <div class="marker"></div>
+            <div class="event-card">
+                <span class="date-label">O Início • 2022</span>
+                <h2>Onde tudo começou</h2>
+                <p>O nosso primeiro contato, mesmo que visual, foi na cidade empresarial, e desde aquele momento eu sempre soube que havia algo especial em você, sobre o qual eu me apaixonaria no futuro. Mal eu sabia que aquilo ia mudar a minha vida para sempre!</p>
+                <div class="img-container">
+                    <img src="1.jpg" alt="Encontro">
+                </div>
+            </div>
+        </div>
+
+        <div class="event-wrapper">
+            <div class="marker"></div>
+            <div class="event-card">
+                <span class="date-label">A Conexão • Detalhes</span>
+                <h2>Sua Essência</h2>
+                <p>Eu me apaixonei pelos detalhes. O jeito que você brinca comigo, a sua risada e a maneira como você faz eu me sentir feliz ao seu lado.</p>
+                <div class="img-container">
+                    <img src="2.jpg" alt="Detalhes">
+                </div>
+            </div>
+        </div>
+
+        <div class="event-wrapper">
+            <div class="marker"></div>
+            <div class="event-card">
+                <span class="date-label">O primeiro passo • Shopping</span>
+                <h2>O Primeiro Encontro</h2>
+                <p>Você lembra da forma que eu andava e como eu era mais esquisito do jeito que eu sou hoje? Do perfume no carro, dos sites e das inumeras mensagens, tudo isso foi o inicio da nossa história.</p>
+                <div class="img-container">
+                    <img src="3.jpg" alt="Nós">
+                </div>
+            </div>
+        </div>
+
+
+           <div class="event-wrapper">
+            <div class="marker"></div>
+            <div class="event-card">
+                <span class="date-label">A Certeza • 08/10/2024</span>
+                <h2>O Pedido de Namoro</h2>
+                <p>O dia que você aceitou o meu pedido de namoro foi o momento eu que eu soube que você erá a minha pessoa para a vida, esse foi o início oficial da nossa jornada, o "sim" mais importante até hoje. </p>
+                <div class="img-container">
+                    <img src="4.jpg" alt="Nós">
+                </div>
+            </div>
+        </div>
+
+    </section>
+
+    <section class="final-section">
+        <p class="subtitle">O FUTURO</p>
+        <h2 class="final-quote">Essa linha do tempo não tem fim, porque quero continuar escrevendo essa história com você todos os dias, até fircarmos bem velinhos, em uma cadeira de balanço em frente a praia.</h2>
+        <h2 class="final-quote">Eu te amo, Amor!</h2>
+        <br>
+    </section>
+
+    <script>
+        // 1. Gerar Estrelas Aleatórias no Fundo
+        const starContainer = document.getElementById('star-container');
+        for(let i=0; i<50; i++) {
+            const star = document.createElement('div');
+            star.className = 'star';
+            star.style.left = Math.random() * 100 + '%';
+            star.style.top = Math.random() * 100 + '%';
+            star.style.width = Math.random() * 2 + 'px';
+            star.style.height = star.style.width;
+            star.style.animationDelay = Math.random() * 5 + 's';
+            starContainer.appendChild(star);
+        }
+
+        // 2. Animação de Scroll (Intersection Observer)
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if(entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.event-card').forEach(card => observer.observe(card));
+
+        // 3. Barra de Progresso
+        window.onscroll = function() {
+            let winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+            let height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            let scrolled = (winScroll / height) * 100;
+            document.getElementById("progressBar").style.width = scrolled + "%";
+        };
+
+        // 4. Controle de Música
+        const audio = document.getElementById('bgMusic');
+        const btn = document.querySelector('.music-toggle');
+        let isPlaying = false;
+
+        function toggleMusic() {
+            if(!isPlaying) {
+                audio.play();
+                btn.classList.add('music-playing');
+                btn.innerHTML = '<i class="fas fa-pause"></i>';
+            } else {
+                audio.pause();
+                btn.classList.remove('music-playing');
+                btn.innerHTML = '<i class="fas fa-music"></i>';
+            }
+            isPlaying = !isPlaying;
+        }
+    </script>
+</body>
+</html>
